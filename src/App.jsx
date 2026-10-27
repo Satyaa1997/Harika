@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 const assets = import.meta.glob("./assets/*", {
@@ -332,6 +332,25 @@ function App() {
   const [offerDismissed, setOfferDismissed] = useState(false);
   const [formMessage, setFormMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const thumbContainerRef = useRef(null);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (thumbContainerRef.current) {
+      const activeBtn = thumbContainerRef.current.children[activeImage];
+      if (activeBtn) {
+        activeBtn.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [activeImage]);
 
   useEffect(() => {
     if (amenityPaused) return undefined;
@@ -883,12 +902,19 @@ function App() {
               <span>Click to view full image ↗</span>
             </div>
           </button>
-          <div className="gallery-thumbs">
+          <div className="gallery-thumbs" ref={thumbContainerRef}>
             {gallery.map(([src, caption], index) => (
               <button
                 className={activeImage === index ? "is-active" : ""}
                 key={src}
-                onClick={() => setActiveImage(index)}
+                onClick={(e) => {
+                  setActiveImage(index);
+                  e.currentTarget.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest",
+                    inline: "center",
+                  });
+                }}
                 aria-label={`View ${caption}`}
                 aria-pressed={activeImage === index}
               >

@@ -317,8 +317,8 @@ img { display: block; max-width: 100%; }
   .hero-inner { width: 91%; }
   .amenity-track { --amenity-gap: 14px; transform: translateX(calc(var(--amenity-index) * (-(100% - 2 * var(--amenity-gap)) / 3 - var(--amenity-gap)))); }
   .amenity-card { flex-basis: calc((100% - 2 * var(--amenity-gap)) / 3); }
-  .gallery-thumbs { grid-template-columns: repeat(4, 1fr); }
-  .gallery-thumbs img { height: 90px; }
+  .gallery-thumbs { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .gallery-thumbs img { height: 74px; }
 }
 
 @media (max-width: 780px) {
@@ -355,9 +355,14 @@ img { display: block; max-width: 100%; }
   .plots-section, .amenities-section { padding: 58px 6% 0; }
   .plot-carousel { margin-top: 29px; }
   .plot-slide-stage { height: 360px; }
-  .plot-slide-caption { bottom: 47px; }
+  .plot-slide-caption { bottom: 30px; }
   .plot-slide-caption > span { font-size: 10px; }
   .plot-slide-arrow { width: 40px; height: 40px; }
+  .plot-slide-dots,
+  .amenity-dots,
+  .stories-dots {
+    display: none !important;
+  }
   .plot-cta { padding: 25px 22px; align-items: flex-start; flex-direction: column; }
   .plot-cta h3 { font-size: 25px; }
   .master-section { grid-template-columns: 1fr; gap: 24px; }
@@ -375,9 +380,37 @@ img { display: block; max-width: 100%; }
   .gallery-section { padding: 42px 6% 38px; }
   .stories-section { padding: 56px 6% 48px; }
   .gallery-feature { height: 48vw; min-height: 190px; }
-  .gallery-thumbs { grid-template-columns: repeat(4, 1fr); gap: 7px; }
-  .gallery-thumbs img { height: 66px; }
-  .gallery-thumbs span { font-size: 7px; }
+  .gallery-thumbs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 2px 2px 8px;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(18, 98, 62, 0.25) transparent;
+  }
+  .gallery-thumbs::-webkit-scrollbar {
+    height: 4px;
+  }
+  .gallery-thumbs::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .gallery-thumbs::-webkit-scrollbar-thumb {
+    background: rgba(18, 98, 62, 0.25);
+    border-radius: 4px;
+  }
+  .gallery-thumbs button {
+    flex: 0 0 92px;
+    min-width: 92px;
+  }
+  .gallery-thumbs img {
+    height: 64px;
+  }
+  .gallery-thumbs span {
+    font-size: 8px;
+  }
   .location-section { padding: 60px 6%; grid-template-columns: 1fr; gap: 25px; }
   .location-copy { width: 100%; justify-self: auto; }
   .location-visual, .location-visual > img { min-height: 260px; height: 260px; }
@@ -423,7 +456,7 @@ img { display: block; max-width: 100%; }
   .highlights b { font-size: 12px; }
   .highlights small { font-size: 8px; }
   .plot-slide-stage { height: 270px; }
-  .plot-slide-caption { bottom: 43px; left: 19px; }
+  .plot-slide-caption { bottom: 24px; left: 19px; }
   .plot-slide-caption h3 { font-size: 39px; }
   .plot-slide-caption > span { font-size: 8px; letter-spacing: .1em; }
   .plot-slide-count { top: 15px; right: 16px; font-size: 12px; }
@@ -432,7 +465,10 @@ img { display: block; max-width: 100%; }
   .section-heading h2, .gallery-heading h2 { font-size: 34px; }
   .gallery-heading { align-items: center; }
   .gallery-feature { height: 48vw; min-height: 175px; }
-  .gallery-thumbs img { height: 53px; }
+  .gallery-thumbs { gap: 6px; padding: 2px 2px 6px; }
+  .gallery-thumbs button { flex: 0 0 80px; min-width: 80px; }
+  .gallery-thumbs img { height: 56px; }
+  .gallery-thumbs span { font-size: 7.5px; }
   .gallery-feature-caption { right: 13px; bottom: 13px; left: 13px; font-size: 9px; }
   .gallery-feature-caption span:last-child { font-size: 8px; }
   .stories-track { transform: translateX(calc(var(--story-index) * (-100% - var(--stories-gap)))); }
@@ -545,6 +581,14 @@ img { display: block; max-width: 100%; }
 
 @media (max-width: 620px) {
   .gallery-feature-caption { font-size: 10px; }
+}
+
+@media (max-width: 780px) {
+  .gallery-thumbs span { font-size: 8px; }
+}
+
+@media (max-width: 420px) {
+  .gallery-thumbs span { font-size: 7.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
