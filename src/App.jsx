@@ -336,6 +336,33 @@ function App() {
   const isInitialMount = useRef(true);
 
   useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    if (window.location.hash) {
+      window.history.replaceState(
+        null,
+        "",
+        window.location.pathname + window.location.search,
+      );
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const timer = window.setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }, 50);
+
+    const handleBeforeUnload = () => {
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
+
+  useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
@@ -516,6 +543,7 @@ function App() {
           >
             <source src={asset("hero vedio.mp4")} type="video/mp4" />
           </video>
+          <div className="hero-shade" />
           <div className="hero-inner mx-auto">
             <div className="hero-copy">
               <span className="eyebrow eyebrow-light">
