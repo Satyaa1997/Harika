@@ -277,6 +277,38 @@ function Icon({ name, size = 22, className = "" }) {
         <path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none" />
       </>
     ),
+    play: (
+      <polygon points="6 4 20 12 6 20 6 4" fill="currentColor" stroke="none" />
+    ),
+    pause: (
+      <>
+        <rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none" />
+        <rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none" />
+      </>
+    ),
+    volume: (
+      <>
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14" />
+      </>
+    ),
+    volumeMute: (
+      <>
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+        <line x1="23" y1="9" x2="17" y2="15" />
+        <line x1="17" y1="9" x2="23" y2="15" />
+      </>
+    ),
+    fullscreen: (
+      <>
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+      </>
+    ),
+    fullscreenExit: (
+      <>
+        <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+      </>
+    ),
   };
   return <svg {...common}>{paths[name] || paths.leaf}</svg>;
 }
@@ -485,6 +517,185 @@ function FallingLeaves({ variant = "orange" }) {
       className={`falling-leaves-canvas ${variant === "green" ? "falling-leaves-green" : "contact-leaves-canvas"}`}
       aria-hidden="true"
     />
+  );
+}
+
+function LocationVideo() {
+  const containerRef = useRef(null);
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+          setIsPlaying(true);
+        } else {
+          video.pause();
+          setIsPlaying(false);
+        }
+      },
+      { threshold: 0.25 }
+    );
+    observer.observe(video);
+
+    const onFullscreenChange = () => {
+      const isFs = Boolean(
+        document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+      );
+      setIsFullscreen(isFs);
+    };
+
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", onFullscreenChange);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", onFullscreenChange);
+    };
+  }, []);
+
+  const togglePlay = (e) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      video.play().catch(() => {});
+      setIsPlaying(true);
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
+  const toggleFullscreen = (e) => {
+    e.stopPropagation();
+    const container = containerRef.current;
+    const video = videoRef.current;
+    if (!container && !video) return;
+
+    const fsElement =
+      document.fullscreenElement ||
+      document.webkitFullscreenElement ||
+      document.mozFullScreenElement;
+
+    if (fsElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    } else {
+      const target = container || video;
+      if (target.requestFullscreen) {
+        target.requestFullscreen().catch(() => {
+          if (video && video.requestFullscreen) video.requestFullscreen();
+        });
+      } else if (target.webkitRequestFullscreen) {
+        target.webkitRequestFullscreen();
+      } else if (video && video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      }
+    }
+  };
+
+  return (
+    <div
+      className={`location-visual location-video-container ${isFullscreen ? "is-fullscreen" : ""}`}
+      ref={containerRef}
+      onClick={togglePlay}
+    >
+      <video
+        ref={videoRef}
+        className="location-video"
+        src={asset("harika cut (1).mp4")}
+        poster={asset("01_01670.jpg_result.jpg")}
+        playsInline
+        loop
+        muted={isMuted}
+        preload="metadata"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
+
+      <div className="location-tag" onClick={(e) => e.stopPropagation()}>
+        <span className="location-tag-icon">
+          <Icon name="pin" size={20} />
+        </span>
+        <span>
+          <b>Harika Paradise</b>
+          <small>Satrikh Road, Lucknow</small>
+        </span>
+      </div>
+
+      {!isPlaying && (
+        <button
+          type="button"
+          className="video-center-play"
+          onClick={togglePlay}
+          aria-label="Play video"
+        >
+          <Icon name="play" size={28} />
+        </button>
+      )}
+
+      <div className="location-video-controls" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          className="video-control-btn"
+          onClick={togglePlay}
+          aria-label={isPlaying ? "Pause video" : "Play video"}
+          title={isPlaying ? "Pause" : "Play"}
+        >
+          <Icon name={isPlaying ? "pause" : "play"} size={16} />
+          <span>{isPlaying ? "Pause" : "Play"}</span>
+        </button>
+
+        <button
+          type="button"
+          className={`video-control-btn ${isMuted ? "is-muted" : "is-unmuted"}`}
+          onClick={toggleMute}
+          aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+          title={isMuted ? "Click to Unmute" : "Click to Mute"}
+        >
+          <Icon name={isMuted ? "volumeMute" : "volume"} size={16} />
+          <span>{isMuted ? "Unmute" : "Mute"}</span>
+        </button>
+
+        <button
+          type="button"
+          className="video-control-btn video-fs-btn"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? "Exit full screen" : "View full screen"}
+          title={isFullscreen ? "Exit Fullscreen" : "View Fullscreen"}
+        >
+          <Icon name={isFullscreen ? "fullscreenExit" : "fullscreen"} size={16} />
+          <span>{isFullscreen ? "Exit" : "Full Screen"}</span>
+        </button>
+      </div>
+
+      <span className="map-caption">
+        A considered address, close to everyday connections.
+      </span>
+    </div>
   );
 }
 
@@ -1207,24 +1418,7 @@ function App() {
               Distances are approximate and based on the project brochure.
             </small>
           </div>
-          <div className="location-visual">
-            <img
-              src={asset("01_01670.jpg_result.jpg")}
-              alt="Aerial view of the Harika Paradise community plan"
-            />
-            <div className="location-tag">
-              <span className="location-tag-icon">
-                <Icon name="pin" size={20} />
-              </span>
-              <span>
-                <b>Harika Paradise</b>
-                <small>Satrikh Road, Lucknow</small>
-              </span>
-            </div>
-            <span className="map-caption">
-              A considered address, close to everyday connections.
-            </span>
-          </div>
+          <LocationVideo />
         </section>
 
         <section className="stories-section" id="reviews">
