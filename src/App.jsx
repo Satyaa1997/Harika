@@ -696,6 +696,7 @@ function App() {
   const [plotSlide, setPlotSlide] = useState(0);
   const [plotSliderPaused, setPlotSliderPaused] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
+  const [mapViewerOpen, setMapViewerOpen] = useState(false);
   const [amenityIndex, setAmenityIndex] = useState(0);
   const [amenityPaused, setAmenityPaused] = useState(false);
   const [visibleAmenities, setVisibleAmenities] = useState(4);
@@ -824,6 +825,26 @@ function App() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [galleryOpen]);
+
+  useEffect(() => {
+    if (!mapViewerOpen) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setMapViewerOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [mapViewerOpen]);
+
+  useEffect(() => {
+    if (mapViewerOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mapViewerOpen]);
 
   useEffect(() => {
     if (offerDismissed) return undefined;
@@ -1570,23 +1591,35 @@ function App() {
                 <Icon name="check" size={18} /> Plot options explained clearly
               </span>
             </div>
-          </div>
-          <div className="contact-form contact-offer-card">
-            <div className="contact-form-title">
-              <span>Harika Paradise</span>
-              <h3>Want to know about our offers?</h3>
+            <div className="contact-actions">
+              <button className="button button-primary" onClick={openOffer}>
+                Register for best offers <Icon name="arrow" size={18} />
+              </button>
             </div>
-            <p>
-              Register your interest and our team will help you with plot
-              availability, pricing and a site visit.
-            </p>
-            <button className="button button-primary" onClick={openOffer}>
-              Register for best offers <Icon name="arrow" size={18} />
-            </button>
-            <small>
-              No-obligation enquiry. Your details are used only to respond to
-              you.
-            </small>
+          </div>
+          <div
+            className="contact-map-card"
+            onClick={() => setMapViewerOpen(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setMapViewerOpen(true);
+              }
+            }}
+            aria-label="Click to view Harika Paradise Map in full screen"
+          >
+            <img
+              src={asset("HarikaMap.JPG")}
+              alt="Harika Paradise Project Map"
+              className="contact-map-img"
+            />
+            <div className="contact-map-hover-hint">
+              <span className="contact-map-hover-pill">
+                <Icon name="fullscreen" size={17} /> Click to View Map
+              </span>
+            </div>
           </div>
         </section>
       </main>
@@ -1629,14 +1662,6 @@ function App() {
                 <Icon name="mail" size={17} />
                 <span>adishak0234@gmail.com</span>
               </a>
-              <a
-                className="footer-crm-link"
-                href="https://adishakti.auctechitsolutions.in/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Go To Real Estate CRM
-              </a>
             </div>
             <div className="footer-social-block">
               <h3>Follow us</h3>
@@ -1647,6 +1672,14 @@ function App() {
                   </a>
                 ))}
               </div>
+              <a
+                className="footer-crm-link"
+                href="https://adishakti.auctechitsolutions.in/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Go To Real Estate CRM
+              </a>
             </div>
           </div>
           <a className="footer-top" href="#home">
@@ -1734,6 +1767,47 @@ function App() {
           >
             <Icon name="arrow" size={24} />
           </button>
+        </div>
+      )}
+      {mapViewerOpen && (
+        <div
+          className="map-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Harika Paradise Project Map Viewer"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setMapViewerOpen(false);
+          }}
+        >
+          <button
+            className="lightbox-close map-lightbox-close"
+            onClick={() => setMapViewerOpen(false)}
+            aria-label="Close map viewer"
+          >
+            <Icon name="close" size={24} />
+          </button>
+          <figure className="map-lightbox-figure">
+            <img
+              src={asset("HarikaMap.JPG")}
+              alt="Harika Paradise Project Map Full View"
+            />
+            <figcaption className="map-lightbox-caption">
+              <div>
+                <strong>Harika Paradise · Project Map</strong>
+                <small>Satrikh Road, Lucknow</small>
+              </div>
+              <button
+                type="button"
+                className="map-lightbox-cta"
+                onClick={() => {
+                  setMapViewerOpen(false);
+                  openOffer();
+                }}
+              >
+                Register for best offers <Icon name="arrow" size={16} />
+              </button>
+            </figcaption>
+          </figure>
         </div>
       )}
       {offerOpen && (
