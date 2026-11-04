@@ -316,6 +316,178 @@ function CountUp({ value, duration = 1400 }) {
   return <b ref={setNode}>{count.toFixed(digits)}</b>;
 }
 
+function FallingLeaves({ variant = "orange" }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animId = null;
+    let isVisible = true;
+    let width = 0;
+    let height = 0;
+
+    const isGreen = variant === "green";
+    const leafImages = [];
+    if (isGreen) {
+      const img1 = new Image();
+      img1.src = asset("green-leaf.png") || "/green-leaf.png";
+      const img2 = new Image();
+      img2.src = asset("green-leaf-fresh.png") || "/green-leaf-fresh.png";
+      leafImages.push(img1, img2);
+    } else {
+      const img1 = new Image();
+      img1.src = asset("orange-leaf.png") || "/orange-leaf.png";
+      const img2 = new Image();
+      img2.src = asset("orange-leaf-gold.png") || "/orange-leaf-gold.png";
+      leafImages.push(img1, img2);
+    }
+
+    let leaves = [];
+
+    const createLeaf = (isInitial = false) => {
+      const depth = Math.random();
+      const size = 18 + depth * 22;
+      const img = leafImages[Math.random() > 0.45 ? 0 : 1];
+      const curWidth = width || 1000;
+      const curHeight = height || 450;
+
+      return {
+        img,
+        size,
+        depth,
+        x: Math.random() * curWidth,
+        y: isInitial ? Math.random() * curHeight : -size - Math.random() * 40,
+        speedY: 0.65 + depth * 0.95,
+        speedX: (Math.random() - 0.45) * 0.4,
+        swayAmp: 1.2 + Math.random() * 1.8,
+        swayFreq: 0.012 + Math.random() * 0.018,
+        swayPhase: Math.random() * Math.PI * 2,
+        rotation: Math.random() * Math.PI * 2,
+        spinSpeed: (Math.random() - 0.5) * 0.022,
+        flutterPhase: Math.random() * Math.PI * 2,
+        flutterSpeed: 0.018 + Math.random() * 0.025,
+        opacity: isGreen ? 0.38 + depth * 0.42 : 0.48 + depth * 0.44,
+      };
+    };
+
+    const updateSize = () => {
+      const parent = canvas.parentElement;
+      const rect = parent ? parent.getBoundingClientRect() : { width: 1200, height: 450 };
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = rect.width;
+      height = rect.height;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const targetCount = width < 640 ? 14 : width < 1024 ? 22 : 30;
+      while (leaves.length < targetCount) {
+        leaves.push(createLeaf(true));
+      }
+      if (leaves.length > targetCount) {
+        leaves.length = targetCount;
+      }
+    };
+
+    updateSize();
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateSize();
+    });
+    if (canvas.parentElement) {
+      resizeObserver.observe(canvas.parentElement);
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible && !animId) {
+          animId = requestAnimationFrame(loop);
+        }
+      },
+      { threshold: 0.05 }
+    );
+    io.observe(canvas);
+
+    const drawFallback = (size, opacity) => {
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = isGreen ? "#5d9d52" : "#c7492b";
+      ctx.beginPath();
+      ctx.moveTo(0, -size / 2);
+      ctx.quadraticCurveTo(size * 0.5, 0, 0, size * 0.5);
+      ctx.quadraticCurveTo(-size * 0.5, 0, 0, -size / 2);
+      ctx.fill();
+      ctx.restore();
+    };
+
+    const loop = () => {
+      if (!isVisible) {
+        animId = null;
+        return;
+      }
+
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < leaves.length; i++) {
+        const leaf = leaves[i];
+
+        leaf.y += leaf.speedY;
+        leaf.swayPhase += leaf.swayFreq;
+        leaf.x += Math.sin(leaf.swayPhase) * leaf.swayAmp + leaf.speedX;
+        leaf.rotation += leaf.spinSpeed;
+        leaf.flutterPhase += leaf.flutterSpeed;
+
+        if (leaf.y > height + leaf.size + 25) {
+          Object.assign(leaf, createLeaf(false));
+        }
+        if (leaf.x < -leaf.size - 30) leaf.x = width + leaf.size;
+        if (leaf.x > width + leaf.size + 30) leaf.x = -leaf.size;
+
+        const flip = Math.cos(leaf.flutterPhase);
+
+        ctx.save();
+        ctx.translate(leaf.x, leaf.y);
+        ctx.rotate(leaf.rotation);
+        ctx.scale(flip, 1);
+        ctx.globalAlpha = leaf.opacity * (0.6 + 0.4 * Math.abs(flip));
+
+        const img = leaf.img;
+        if (img && img.complete && img.naturalWidth > 0) {
+          const half = leaf.size / 2;
+          ctx.drawImage(img, -half, -half, leaf.size, leaf.size);
+        } else {
+          drawFallback(leaf.size, leaf.opacity);
+        }
+
+        ctx.restore();
+      }
+
+      animId = requestAnimationFrame(loop);
+    };
+
+    animId = requestAnimationFrame(loop);
+
+    return () => {
+      if (animId) cancelAnimationFrame(animId);
+      resizeObserver.disconnect();
+      io.disconnect();
+    };
+  }, [variant]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={`falling-leaves-canvas ${variant === "green" ? "falling-leaves-green" : "contact-leaves-canvas"}`}
+      aria-hidden="true"
+    />
+  );
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
@@ -332,6 +504,7 @@ function App() {
   const [offerDismissed, setOfferDismissed] = useState(false);
   const [formMessage, setFormMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const thumbContainerRef = useRef(null);
   const isInitialMount = useRef(true);
 
@@ -360,6 +533,15 @@ function App() {
       window.clearTimeout(timer);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
@@ -508,7 +690,7 @@ function App() {
           <Icon name="phone" size={14} /> 05224205350
         </a>
       </div>
-      <header className="site-header sticky top-0 z-30">
+      <header className={`site-header sticky top-0 z-30 ${isScrolled ? "is-scrolled" : ""}`}>
         <a className="brand" href="#home" aria-label="Harika Paradise home">
           <img src={asset("logo.png")} alt="Harika Paradise" />
         </a>
@@ -740,54 +922,57 @@ function App() {
           </div>
         </section>
 
-        <section className="section master-section" id="master-plan">
-          <div className="section-heading">
-            <span className="eyebrow">A community in balance</span>
-            <h2>
-              Thoughtfully planned.
-              <br />
-              <em>Easy to explore.</em>
-            </h2>
-            <p>
-              See how plots, internal roads and landscaped community spaces come
-              together across Harika Paradise.
-            </p>
-            <div className="master-points">
-              <span>
-                <Icon name="check" size={17} /> Organised plot layout
-              </span>
-              <span>
-                <Icon name="check" size={17} /> Wide internal roads
-              </span>
-              <span>
-                <Icon name="check" size={17} /> Green spaces within reach
-              </span>
+        <div className="master-section-wrap" id="master-plan">
+          <FallingLeaves variant="green" />
+          <section className="section master-section">
+            <div className="section-heading">
+              <span className="eyebrow">A community in balance</span>
+              <h2>
+                Thoughtfully planned.
+                <br />
+                <em>Easy to explore.</em>
+              </h2>
+              <p>
+                See how plots, internal roads and landscaped community spaces come
+                together across Harika Paradise.
+              </p>
+              <div className="master-points">
+                <span>
+                  <Icon name="check" size={17} /> Organised plot layout
+                </span>
+                <span>
+                  <Icon name="check" size={17} /> Wide internal roads
+                </span>
+                <span>
+                  <Icon name="check" size={17} /> Green spaces within reach
+                </span>
+              </div>
+              <a
+                className="button button-primary"
+                href={asset("Brochure_Aadi Shakti_25-10-2026.pdf")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open project brochure <Icon name="arrow" size={18} />
+              </a>
             </div>
             <a
-              className="button button-primary"
-              href={asset("Brochure_Aadi Shakti_25-10-2026.pdf")}
+              className="master-image"
+              href={asset("HARIKA PARADISE VIEW-10.jpg_result.jpg")}
               target="_blank"
               rel="noreferrer"
+              aria-label="Open Harika Paradise master plan image"
             >
-              Open project brochure <Icon name="arrow" size={18} />
+              <img
+                src={asset("HARIKA PARADISE VIEW-10.jpg_result.jpg")}
+                alt="Harika Paradise plotted master plan with colour-coded plot blocks"
+              />
+              <span className="master-image-label">
+                <Icon name="road" size={18} /> Community master plan <b>↗</b>
+              </span>
             </a>
-          </div>
-          <a
-            className="master-image"
-            href={asset("HARIKA PARADISE VIEW-10.jpg_result.jpg")}
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Open Harika Paradise master plan image"
-          >
-            <img
-              src={asset("HARIKA PARADISE VIEW-10.jpg_result.jpg")}
-              alt="Harika Paradise plotted master plan with colour-coded plot blocks"
-            />
-            <span className="master-image-label">
-              <Icon name="road" size={18} /> Community master plan <b>↗</b>
-            </span>
-          </a>
-        </section>
+          </section>
+        </div>
 
         <section className="amenities-section" id="amenities">
           <div className="section-heading section-heading-center">
@@ -1142,6 +1327,7 @@ function App() {
         </section>
 
         <section className="contact-section" id="contact">
+          <FallingLeaves />
           <div className="contact-copy">
             <span className="eyebrow eyebrow-light">A good place to begin</span>
             <h2>
