@@ -636,16 +636,6 @@ function LocationVideo() {
         onPause={() => setIsPlaying(false)}
       />
 
-      <div className="location-tag" onClick={(e) => e.stopPropagation()}>
-        <span className="location-tag-icon">
-          <Icon name="pin" size={20} />
-        </span>
-        <span>
-          <b>Harika Paradise</b>
-          <small>Satrikh Road, Lucknow</small>
-        </span>
-      </div>
-
       {!isPlaying && (
         <button
           type="button"
@@ -1730,21 +1720,33 @@ function App() {
               <img src={asset("logo.png")} alt="Harika Paradise" />
             </div>
             <div className="offer-promise">
-              <span className="eyebrow eyebrow-light">
-                A better way to begin
-              </span>
-              <h2>We promise</h2>
-              <ul>
-                <li>
-                  <Icon name="check" size={17} /> Instant call back
-                </li>
-                <li>
-                  <Icon name="check" size={17} /> Free site visit
-                </li>
-                <li>
-                  <Icon name="check" size={17} /> Best available offer
-                </li>
-              </ul>
+              <video
+                className="offer-promise-video"
+                src={asset("vedio leaf.mp4")}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="auto"
+              />
+              <div className="offer-promise-overlay" />
+              <div className="offer-promise-content">
+                <span className="eyebrow eyebrow-light">
+                  A better way to begin
+                </span>
+                <h2>We promise</h2>
+                <ul>
+                  <li>
+                    <Icon name="check" size={17} /> Instant call back
+                  </li>
+                  <li>
+                    <Icon name="check" size={17} /> Free site visit
+                  </li>
+                  <li>
+                    <Icon name="check" size={17} /> Best available offer
+                  </li>
+                </ul>
+              </div>
               <span className="offer-decoration" aria-hidden="true">
                 H
               </span>
