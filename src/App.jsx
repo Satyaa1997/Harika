@@ -127,6 +127,7 @@ const stories = [
 ];
 
 const navLinks = [
+  ["About", "about"],
   ["Overview", "overview"],
   ["Master plan", "master-plan"],
   ["Amenities", "amenities"],
@@ -1000,6 +1001,46 @@ function App() {
           </div>
         </section>
 
+        <section className="section about-section" id="about">
+          <div className="about-copy">
+            <span className="eyebrow">Harika Paradise</span>
+            <h2 className="about-title">
+              About the <em>Project</em>
+            </h2>
+            <p className="about-lead">
+              Harika Paradise is dedicated to creating thoughtfully planned spaces that inspire better living.
+            </p>
+            <p>
+              We combine elegant design, modern infrastructure, and natural surroundings in every development. Our commitment to quality ensures lasting comfort, safety, and long-term value.
+            </p>
+            <p>
+              Transparency and customer satisfaction remain at the heart of everything we do. Every detail is carefully designed to meet the expectations of modern families.
+            </p>
+            <blockquote className="about-quote">
+              “At Harika Paradise, we do not just develop spaces—we create distinguished addresses for generations.”
+            </blockquote>
+            <div className="about-actions">
+              <button className="button button-primary" onClick={openOffer}>
+                Register for best offers <Icon name="arrow" size={17} />
+              </button>
+              <a className="inline-link" href="#master-plan">
+                Explore master plan <Icon name="arrow" size={17} />
+              </a>
+            </div>
+          </div>
+
+          <div className="about-image-wrap">
+            <img
+              src={asset("01_00027.jpg_result.jpg")}
+              alt="Harika Paradise Plotted Living Community View"
+            />
+            <div className="about-image-stamp">
+              <span>Distinguished</span>
+              <small>Living for Generations</small>
+            </div>
+          </div>
+        </section>
+
         <section className="section overview-section" id="overview">
           <div className="overview-image-wrap">
             <img
@@ -1734,13 +1775,13 @@ function App() {
                 <span className="eyebrow eyebrow-light">
                   A better way to begin
                 </span>
-                <h2>We promise</h2>
+                <h2>We provide</h2>
                 <ul>
                   <li>
-                    <Icon name="check" size={17} /> Instant call back
+                    <Icon name="check" size={17} /> Secure & Confidential
                   </li>
                   <li>
-                    <Icon name="check" size={17} /> Free site visit
+                    <Icon name="check" size={17} /> Verified Properties
                   </li>
                   <li>
                     <Icon name="check" size={17} /> Best available offer
