@@ -1054,8 +1054,9 @@ h2 em {
 }
 
 .plots-section {
-  padding: 78px 7% 0;
+  padding: 78px max(7%, calc((100% - 1160px) / 2)) 0;
   background: #f4f5ed;
+  position: relative;
 }
 
 .section-heading-center {
@@ -1206,16 +1207,22 @@ h2 em {
 }
 
 .plot-cta {
-  width: min(1180px, 100%);
+  width: 100%;
+  max-width: 1160px;
   min-height: 148px;
-  margin: 40px auto 0;
-  padding: 24px 34px;
+  margin: 50px auto -74px;
+  padding: 28px 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 25px;
   color: white;
   background: var(--forest-deep);
+  border-radius: 6px;
+  box-shadow: 0 22px 55px rgba(10, 38, 25, 0.28), 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 10;
+  border-top: 3px solid var(--terracotta);
 }
 
 .plot-cta h3 {
@@ -1244,6 +1251,7 @@ h2 em {
   grid-template-columns: .8fr 1.2fr;
   gap: clamp(40px, 7vw, 90px);
   align-items: center;
+  padding-top: 130px;
 }
 
 .master-section h2 {
@@ -1309,12 +1317,13 @@ h2 em {
 }
 
 .amenities-section {
-  padding: 78px 7% 0;
+  padding: 78px max(7%, calc((100% - 1160px) / 2)) 0;
   background: #f4f5ed;
 }
 
 .amenity-carousel {
-  width: min(1180px, 100%);
+  width: 100%;
+  max-width: 1160px;
   margin: 42px auto 0;
 }
 
@@ -1448,13 +1457,16 @@ h2 em {
 }
 
 .amenity-image-row {
-  width: min(1250px, calc(100% + 14vw));
-  margin: 58px 50% 0;
-  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1160px;
+  margin: 58px auto 0;
+  transform: none;
   display: grid;
   grid-template-columns: 1fr 1.05fr 1fr;
   min-height: 260px;
   background: var(--forest-deep);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .amenity-image-row>img {
@@ -1489,12 +1501,13 @@ h2 em {
 }
 
 .gallery-section {
-  padding: 64px 7% 60px;
+  padding: 64px max(7%, calc((100% - 1160px) / 2)) 60px;
   background: #fffefa;
 }
 
 .gallery-heading {
-  width: min(1160px, 100%);
+  width: 100%;
+  max-width: 1160px;
   margin: 0 auto 28px;
   display: flex;
   align-items: end;
@@ -3013,9 +3026,11 @@ h2 em {
   }
 
   .plot-cta {
-    padding: 25px 22px;
+    margin: 35px auto -85px;
+    padding: 24px 22px;
     align-items: flex-start;
     flex-direction: column;
+    gap: 16px;
   }
 
   .plot-cta h3 {
@@ -3025,6 +3040,7 @@ h2 em {
   .master-section {
     grid-template-columns: 1fr;
     gap: 24px;
+    padding-top: 115px;
   }
 
   .master-image {
@@ -3060,8 +3076,10 @@ h2 em {
   }
 
   .amenity-image-row {
-    width: calc(100% + 12vw);
-    margin-top: 38px;
+    width: 100%;
+    max-width: 1160px;
+    margin: 38px auto 0;
+    transform: none;
     grid-template-columns: 1fr 1fr;
   }
 
