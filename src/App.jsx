@@ -1788,7 +1788,7 @@ function App() {
           </button>
           <figure className="map-lightbox-figure">
             <img
-              src={asset("HarikaMap.JPG")}
+              src={asset("harika_route_10cars.gif")}
               alt="Harika Paradise Project Map Full View"
             />
             <figcaption className="map-lightbox-caption">

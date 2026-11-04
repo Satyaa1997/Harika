@@ -738,6 +738,15 @@ img { display: block; max-width: 100%; }
   .mobile-bottom-cta button { min-height: 41px; padding: 0 16px; display: inline-flex; align-items: center; gap: 7px; color: white; background: var(--terracotta); border: 0; border-radius: 2px; font-size: 11px; font-weight: 700; }
 }
 
+@media (max-width: 767px) {
+  .amenity-image-row {
+    display: none !important;
+  }
+  .amenities-section {
+    padding-bottom: 42px;
+  }
+}
+
 @media (max-width: 420px) {
   .amenity-track { transform: translateX(calc(var(--amenity-index) * (-100% - var(--amenity-gap)))); }
   .amenity-card { min-width: 100%; }
@@ -770,13 +779,6 @@ img { display: block; max-width: 100%; }
   .stories-track { transform: translateX(calc(var(--story-index) * (-100% - var(--stories-gap)))); }
   .story-card { flex-basis: 100%; min-height: 205px; }
   .story-card > p { font-size: 12px; }
-  .amenity-image-row { width: 100%; margin-top: 28px; display: flex; flex-direction: column; }
-  .amenity-image-row > img { display: block; width: 100%; height: min(48vw, 220px); min-height: 150px; }
-  .amenity-image-row > div { order: 1; padding: 22px 6%; }
-  .amenity-image-row > img:first-child { order: 0; }
-  .amenity-image-row > img:last-child { display: none; }
-  .amenity-image-row h3 { margin: 9px 0 7px; font-size: clamp(23px, 6vw, 29px); }
-  .amenity-image-row p { margin-bottom: 9px; font-size: 12px; }
   .form-row { grid-template-columns: 1fr; gap: 0; }
   .footer-brand { width: 60px; height: 60px; flex: 0 0 auto; }
   .footer-brand img { width: 56px; height: 56px; }
